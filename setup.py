@@ -29,7 +29,7 @@ setup(
     packages=[
         'OntoSim',
     ],
-    package_dir={'OntoSim':'OntoSim',
+    package_dir={'OntoSim':'OntoSim','OntoSim':'OntoSim/Src',
                  },
     entry_points={
         'console_scripts': [
