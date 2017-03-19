@@ -15,7 +15,7 @@
 """
 
 import matplotlib.pyplot as plt                                    # Matplotlib
-import networkx as nx                                                # Networkx
+# import networkx as nx                                                # Networkx
 from time import asctime, localtime, time                    # Library for time
 
 class Equation(object):
@@ -138,12 +138,12 @@ class EquationsTree(object):
             of.write(el.symbol+' [style = filled, fillcolor = White];\n')
           alEls.append(el)
 
-      alPaths = []
+      allPaths = []
       for path in self.tree:
         for a,b in zip(path[:-1], path[1:]):
-          if (a,b) in alPaths:
+          if (a,b) in allPaths:
             continue
           of.write(a.symbol+' -- '+b.symbol+';\n')
-          alPaths.append((a,b))
+          allPaths.append((a,b))
           # G.add_edge(a.symbol, b.symbol)
       of.write('}')
