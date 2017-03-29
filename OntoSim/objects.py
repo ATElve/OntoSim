@@ -82,6 +82,9 @@ class Variables(object):
       self.rest.append(var)
 
   def addEquation(self, var):
+    """
+    Add list of equations 
+    """
     self.symbols.append(var.symbol)
     self.seqvariables.append(var)
     if var.type == 'transport':
