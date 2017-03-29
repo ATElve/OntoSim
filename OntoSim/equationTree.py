@@ -53,11 +53,11 @@ class EquationsTree(object):
         for var in eq.instances:
           # print('var.symbol = ', var.symbol)
           if var in curpath or var.type == 'state':
-            curpath.append(var)
+            curpath.append(TreeVariable(var))
             tree.append([var for var in curpath])
             curpath.pop()
           else:
-            curpath.append(var)
+            curpath.append(TreeVariable(var))
             self.buildTree(tree,curpath,curpath[-1])
         curpath.pop()
       curpath.pop()
