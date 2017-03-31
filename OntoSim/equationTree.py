@@ -6,12 +6,15 @@
 .. moduleauthor:: Arne Tobias Elve <arne.t.elve@ntnu.no>
 
 .. date:: 2017-03-03
+.. update:: 2017-03-30
 
 .. contents:: - dept search first algorithm
               Equation: class representing the equation alternatives
+              TreeVariable: class representing variables in the tree
 
 
 .. notes::    (2017-03-09) second version of operator file
+              (2017-03-30) added subclass of tree
 """
 
 import matplotlib.pyplot as plt                                    # Matplotlib
@@ -25,79 +28,66 @@ class Equation(object):
     self.alternative = alternative
     self.ex = exe
     self.type = 'equation'
+    self.select = True                                # Flag to select equation
 
   def __str__(self):
     return self.symbol
 
 class TreeVariable(object):
   """Representation of variable in tree"""
-  def __init__(self, var):
+  def __init__(self, var, given = False):
     self.var = var
     self.symbol = var.symbol
     self.type = var.type
     self.equations = var.equations
-    self.given = False                                 # Flag to check if given
-
-
+    self.given = given                                 # Flag to check if given
 
 class EquationsTree(object):
   """docstring for EquationsTree."""
   def __init__(self, treename, initialVar):
     self.treename = treename
     self.initialVar = initialVar
+    self.equations = {}
+    self.variables = {}
+    self.variables[self.initialVar.symbol] = self.initialVar
     self.tree = self.buildTree([],[TreeVariable(self.initialVar)],self.initialVar)
-
+    self.allElements = {**self.equations, **self.variables}
+    # print(self.allElements.keys())
     # self.drawGraph()
-    self.makeDotGraph()
 
+    # self.makeDotGraph()
   def buildTree(self, tree, curpath, next):
     """Tree builder"""
-    equations = {}
-    variables = {}
+    # equations = {}
+    # self.variables = {}
     if next.equations:
       for i,eq in enumerate(next.equations):
         eqsymbol = 'eq'+str(i)+next.symbol
-        if eqsymbol not in equations.keys():
-          equations[eqsymbol] = Equation(eqsymbol, i, eq)
-        curpath.append(equations[eqsymbol])
+        if eqsymbol not in self.equations.keys():
+          self.equations[eqsymbol] = Equation(eqsymbol, i, eq)
+        curpath.append(self.equations[eqsymbol])
         # curpath.append(Equation(eqsymbol, i, eq))
-        # equations.append(eq)
+        # self.equations.append(eq)
         for var in eq.instances:
           # print('var.symbol = ', var.symbol)
           if var in curpath or var.type == 'state':
-            if var.symbol not in variables.keys():
-              variables[var.symbol] = TreeVariable(var)
-            curpath.append(variables[var.symbol])
+            if var.symbol not in self.variables.keys():
+              self.variables[var.symbol] = TreeVariable(var)
+            curpath.append(self.variables[var.symbol])
             tree.append([var for var in curpath])
             curpath.pop()
           else:
-            if var.symbol not in variables.keys():
-              variables[var.symbol] = TreeVariable(var)
-            curpath.append(variables[var.symbol])
+            if var.symbol not in self.variables.keys():
+              self.variables[var.symbol] = TreeVariable(var)
+            curpath.append(self.variables[var.symbol])
             self.buildTree(tree,curpath,curpath[-1])
         curpath.pop()
       curpath.pop()
     else:
       tree.append([var for var in curpath])
       curpath.pop()
+    # self.tree = tree
     return tree
-
-  def buildGraphTree(self, tree, curpath, next):
-    variables = []
-    equations = []
-    thisTree = []
-    for path in self.tree:
-      thisPath = []
-      for el in path:
-        if el.type == 'equation':
-          equa = Equation(el.symbol,el.alternative,el.ex)
-          thisPath.append(equa)
-          equations.append(equa)
-        else: # Variable of some sort
-          vara = TreeVariable(el.var)
-          variables.append(vara)
-          thisPath.append(vara)
-
 
   def drawGraph(self):
     """
@@ -146,12 +136,13 @@ class EquationsTree(object):
       alEls = []
       for path in self.tree:
         for el in path:
-          shape = 'ellipse'
-          # if el.symbol in alEls:
+          if el.symbol in alEls:
             # print(el.symbol)
-            # continue
+            continue
+          shape = 'ellipse'
           if el.type == 'equation':
             of.write(el.symbol+' [style = filled, label = ' + str(el.alternative) +', shape = box, fillcolor = DeepPink];\n')
+            alEls.append(el.symbol)
             continue
           if el.given:
             shape = 'doubleoctagon'
@@ -177,9 +168,121 @@ class EquationsTree(object):
       for path in self.tree:
         for a,b in zip(path[:-1], path[1:]):
           if (a.symbol,b.symbol) in allPaths:
-            print(a,b)
+            # print(a,b)
             continue
           else:
             of.write(a.symbol+' -- '+b.symbol+';\n')
             allPaths.append((a.symbol,b.symbol))
       of.write('}')
+
+  def variableIndex(self):
+    """
+    Add a calculation index for each variable
+
+    Args:
+      None
+
+    Results:
+      Assign a selection vector to the index set of a variable
+    """
+
+class SubTree(EquationsTree):
+  """
+  Tree for a node or an arc
+  """
+  def __init__(self, treename, initialVar):
+
+    self.treename = treename
+    self.initialVar = initialVar
+    self.equations = {}
+    self.variables = {}
+    self.variables[self.initialVar.symbol] = self.initialVar
+    self.yggdrasil = self.buildTree([],[TreeVariable(self.initialVar)],self.initialVar)
+    # self.allElements = {}                  # Collection of all elements in tree
+    self.allElements = {**self.equations, **self.variables}
+    print(self.allElements.keys())
+    self.tree = [path for path in self.yggdrasil]
+
+    self.buildGraphTree()
+    # self.makeDotGraph()
+
+
+  def buildGraphTree(self, tree = None):
+    """make subtree"""
+    variables = []
+    equations = []
+    # alElements = {}
+    # print(self.allElements.keys())
+    thisTree = []
+    if not tree:
+      tree = self.tree
+    for path in tree:
+      thisPath = []
+      for el in path:
+        thisPath.append(el)
+        if el.type == 'equation':
+          # if el.symbol not in alElements.keys():
+            # self.allElements[el.symbol] = Equation(el.symbol, el.alternative, el.ex)
+          # thisPath.append(alElements[el.symbol])
+          if el.select == False:
+            thisPath.pop()
+            break
+          equations.append(self.allElements[el.symbol])
+          continue
+        else: # Variable of some sort
+          # if el.symbol not in self.allElements.keys():
+            # self.allElements[el.symbol] = TreeVariable(el.var, el.given)
+          # equations.append(self.allElements[el.symbol])
+          # vara = TreeVariable(el.var)
+          variables.append(self.allElements[el.symbol])
+          # thisPath.append(vara)
+        # thisPath.append(alElements[el.symbol])
+        if el.type == 'constant' or el.type == 'network' or el.given:
+          # Ensure that last element in path is constant or given.
+          break
+      if thisPath not in thisTree:
+        thisTree.append([var for var in thisPath])
+    self.tree = [path for path in thisTree]
+    # self.alElements = alElements
+    # return thisTree, variables, equations
+
+  def setGivenVariableByName(self, symbol):
+    """
+    Select a variable to be given
+
+    Args:
+      symbol:  Unique symbol of the given variable
+
+    Returns:
+      Updated equation tree for this element.
+    """
+    self.allElements[symbol].given = True
+    self.buildGraphTree()
+    self.makeDotGraph()
+
+  def unsetGivenVariableByName(self, symbol):
+    """
+    Select a variable to be given
+
+    Args:
+      symbol:  Unique symbol of the given variable
+
+    Returns:
+      Updated equation tree for this element.
+    """
+    self.allElements[symbol].given = False
+    self.buildGraphTree(tree = self.yggdrasil)
+    self.makeDotGraph()
+
+  def selectEquationAlternative(self, var, alternative):
+    """
+    Select the equation alternative variable
+
+    Args:
+      var - variable
+      alternative - alternative number
+
+    Return:
+      sets the equation locally as selected
+    """
+    pass
