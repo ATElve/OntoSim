@@ -7,3 +7,9 @@ History
 
 * First release on PyPI.
 * Implemented equation tree.
+
+
+0.1.1 (2017-05-02)
+------------------
+
+* Thermo library
