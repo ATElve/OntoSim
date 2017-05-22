@@ -13,6 +13,7 @@ requirements = [
     'Click>=6.0',
     'numpy',
     'matplotlib',
+    'scipy',
     # TODO: put package requirements here
 ]
 
