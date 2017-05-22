@@ -11,7 +11,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=6.0',
-    'numpy',
+    'numpy>=11.0',
     'matplotlib',
     'scipy',
     # TODO: put package requirements here
