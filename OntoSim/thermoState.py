@@ -70,3 +70,4 @@ if __name__ == '__main__':
   print(gas.Aig)
   print(gas.Sig)
   print(gas.muig)
+  print('TEST IS PASSED')
