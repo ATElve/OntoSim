@@ -28,7 +28,7 @@ Generate a simulator automatically from some input filt files are: 1. Variables 
 Features
 --------
 
-* TODO
+* Framework for automatic process model code generation. 
 
 Credits
 ---------
@@ -37,4 +37,3 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-

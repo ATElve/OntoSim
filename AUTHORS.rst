@@ -10,4 +10,4 @@ Development Lead
 Contributors
 ------------
 
-* Heinz A Preisig <heinz.a.preisig@ntnu.no>
+* Heinz A Preisig <heinz.a.preisig(at)ntnu.no>

@@ -13,3 +13,4 @@ History
 ------------------
 
 * Thermo library
+* Configuration files
