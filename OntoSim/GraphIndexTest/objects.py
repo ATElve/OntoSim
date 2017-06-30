@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""
+"""r
 What:    Objects for topology representation
 Author:  Arne Tobias Elve
 Since:   2017-06-28
@@ -97,7 +97,7 @@ class Graph(object):
     self.matrices = {}
     for token in self.tokenset:
       matrix = []
-      local
+      # local
 
   def produceDot(self):
     os.system('dot -Tpdf main.dot > main.pdf')

@@ -1,7 +1,7 @@
 ###############################################################################
 #	 Purpose: Dot graph for equation tree.
 #	 Author:  Arne Tobias Elve
-#	 Date:    Thu Jun 29 11:39:58 2017
+#	 Date:    Fri Jun 30 15:02:53 2017
 #	 Why:     Output to dot language 
 ###############################################################################
 graph G {
