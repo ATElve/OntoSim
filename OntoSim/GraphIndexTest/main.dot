@@ -1,0 +1,19 @@
+###############################################################################
+#	 Purpose: Dot graph for equation tree.
+#	 Author:  Arne Tobias Elve
+#	 Date:    Thu Jun 29 11:39:58 2017
+#	 Why:     Output to dot language 
+###############################################################################
+graph G {
+rankdir = "LR"
+a [style = filled, fillcolor = Tomato];
+b [style = filled, fillcolor = Tomato];
+c [style = filled, fillcolor = Tomato];
+d [style = filled, fillcolor = Tomato];
+e [style = filled, fillcolor = Tomato];
+a -- b[ label = ab];
+b -- c[ label = bc];
+b -- d[ label = bd];
+c -- d[ label = cd];
+d -- e[ label = de];
+}
