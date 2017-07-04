@@ -15,7 +15,7 @@ import OntoSim
 import sys
 sys.path.append('..')
 import Common.configuration_file
-from objects import *
+# from objects import *
 from time import asctime, localtime, time                    # Library for time
 
 
@@ -28,7 +28,7 @@ def getIndexes():
 
 # from objects import *
 def makeIndexFile():
-  with open('indexSets.py','w') as indexFile:
+  with open('Common/indexSets.py','w') as indexFile:
     indexFile.write('#'*79+'\n')
     indexFile.write('#\t Purpose: Prepare the index sets\n')
     indexFile.write('#\t Author:  Arne Tobias Elve\n')

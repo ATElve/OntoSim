@@ -13,7 +13,7 @@ Why:     This is the test version to be presented to Heinz before this is
 Update:  2017-06-28
 """
 
-from time import asctime, localtime, time                    # Library for time
+from time import strftime, time                    # Library for time
 import os                                                    # Operating system
 import numpy as np
 import OntoSim
@@ -28,7 +28,8 @@ class Graph(object):
     self.arcs = arcs                                             # List of arcs
 
     # STORAGE CONTAINERS #
-    self.dotfile = 'main.dot'
+    self.dotfile = 'DOT/test.dot'
+    self.pdffile = 'DOT/test.pdf'
     self.tokenMass = 'mass'
     self.tokenEnergy = 'energy'
 
@@ -39,7 +40,7 @@ class Graph(object):
       dotfile.write('#'*79+'\n')
       dotfile.write('#\t Purpose: Dot graph for equation tree.\n')
       dotfile.write('#\t Author:  Arne Tobias Elve\n')
-      dotfile.write('#\t Date:    '+str(asctime( localtime(time()) ))+'\n')
+      dotfile.write('#\t Date:    {0}\n'.format(strftime("%Y-%m-%d %H:%M:%S")))
       dotfile.write('#\t Why:     Output to dot language \n')
       dotfile.write('#'*79+'\n')
       dotfile.write('graph G {\n')
@@ -53,6 +54,22 @@ class Graph(object):
         '[ label = ' + arc.label +'];\n')
       # FINISH FILE
       dotfile.write('}')
+
+  def produceDot(self):
+    os.system('dot -Tpdf {0} > {1}'.format(self.dotfile, self.pdffile))
+
+  def injectSpecies(self, reservoir, species):
+    """
+    Inject a species in a reservoir
+
+    Args:
+      reservoir: The reservoir where the injection takes place
+      species: List of species which is injected in this reservoir
+
+    This is  used to inject species in the graph.  The injection can only occur
+    in an reservoir.  This function  does only inject the species.  It does not
+    propogate at this location. That is carried out in other functions.
+    """
 
   def makeTokenSet(self):
     """
@@ -100,8 +117,6 @@ class Graph(object):
       matrix = []
       # local
 
-  def produceDot(self):
-    os.system('dot -Tpdf main.dot > main.pdf')
 
 class IndexSet(object):
   """
@@ -117,11 +132,12 @@ class IndexSet(object):
   is done according to the nodes and the arcs.
   """
   ___refs___ = []                               # All indexing sets in sequence
-  # def __init__(self,  symbol,                                   # UNIQUE SYMBOL
-  #                     mapping = [],               # MAPPING OVER TO TO SUPERSET
-  #                     sets = [],                    # COMBINATION OF WHICH SETS
-  #                     blocking = [],                         # BLOCK DEFINITION
-  #                     superset = None,                 # PART OF WITCH SUPERSET
+  indices = Common.indices.getIndexes() # Read in the complete index dictionary
+  # def __init__(self,  symbol,                                 # UNIQUE SYMBOL
+  #                     mapping = [],             # MAPPING OVER TO TO SUPERSET
+  #                     sets = [],                  # COMBINATION OF WHICH SETS
+  #                     blocking = [],                       # BLOCK DEFINITION
+  #                     superset = None,               # PART OF WITCH SUPERSET
   #             ):
   #   self.blocking = blocking
   #   self.superset = superset
@@ -136,51 +152,75 @@ class IndexSet(object):
     Init set from index dict
 
     Args:
-      ..: indexSet: Index dict
+      indexSet: Index dict
 
-    Produces:
-      ..: populate object
+    Generate  the basic  implementation  of the index set.  The index  sets are
+    generated  from  the configuration  file representing  the ontology  of the
+    model.
     """
-    self.___refs___.append(self)
-    self.aliases = indexSet['aliases']
-    self.symbol = indexSet['symbol']
-    self.layer = indexSet['layer']
-    self.type = indexSet['type']
-    self.name = indexSet['aliases'][0][1]
-    try:
+    self.___refs___.append(self)                  # Making a list of references
+    self.name = indexSet['aliases'][0][1]   # Used in this programming language
+    self.aliases = indexSet['aliases']                            # All aliases
+    self.symbol = indexSet['symbol']             # Symbol in configuration file
+    self.layer = indexSet['layer']                      # Valid in which layers
+    self.type = indexSet['type']               # What type is this: its a index
+    # The following is a bit of a hack.  Do not like it, but it is not terrible
+    try:                     # This the string representation of this index set
       self.str = indexSet['str']
     except:
       self.str = ''
-    try:
-      self.super = indexSet['super']
+    try:                                    # Maps over to which index set type
+      self.super = eval(self.indices[indexSet['super']]['aliases'][0][1])
     except:
       self.super = None
-    try:
-      self.sub = indexSet['sub']
+    try:                                                              # Subsets
+      self.sub = eval(self.indices[indexSet['sub']]['aliases'][0][1])
     except:
       self.sub = None
-    try:
-      self.inner = indexSet['inner']
+    try:                                                       # Inner blocking
+      self.inner = eval(self.indices[indexSet['inner']]['aliases'][0][1])
     except:
       self.inner = None
-    try:
-      self.outher = indexSet['outher']
+    try:                                                      # Outher blocking
+      self.outher = eval(self.indices[indexSet['outher']]['aliases'][0][1])
     except:
       self.outher = None
+    # The rest is preparing what to come
+    self.blocking = []               # Size of the inner blocking in the outher
+    self.mapping = []              # Representation into the superset or itself
 
 
-  def populateSet(self):
+  def makeBlocking(blocking = []):
+    """
+    Define sizes of the inneer blocks.
+
+    Args:
+      blocking: List with the sizes of the inner blocks
+
+    Populate the blocking variable. This maps over to the mapping
+    """
     pass
 
-  def printSet(self):
-    print('symbol = ', self.symbol)
+  def makeMapping(mapping = []):
+    """
+    Make mapping over to super set.
 
-  def __str__(self):
+    Args:
+      mapping: List with the indices into the superset
+
+    If no super set the set is defined as its own super set.
+    """
+    pass
+
+  def __str__(self):                         # The name in the current language
+    return self.name
+
+  def __repr__(self):                      # The name in the configuration file
     return self.symbol
 
 
 class Node(Graph):
-  """
+  """inner
   Each node included in the graph.
   """
   ___refs___ = []
@@ -211,21 +251,21 @@ if __name__ == '__main__':
   Common.indices.makeIndexFile()
   exec(open('Common/indexSets.py').read())
   # print(N.type)
-  # for ind in N.___refs___:
-    # print(ind.name)
+
 
   #
-  # nodeType = {'dimensionality':'0', 'dynamics':'lumped', 'token':'mass'}
-  # arcType = {'token':'mass', 'mechanism':'volumetic'}
+  nodeType = {'dimensionality':'0', 'dynamics':'lumped', 'token':'mass'}
+  arcType = {'token':'mass', 'mechanism':'volumetic'}
   # # n1 = Node('a',type1)
   # # n2 = Node('b',type1)
-  # nodes = [Node('a', nodeType), Node('b', nodeType), Node('c', nodeType),
-  # Node('d', nodeType), Node('e', nodeType)]
-  # arcs = [Arc('ab',arcType,nodes[0],nodes[1]),
-  # Arc('bc', arcType, nodes[1], nodes[2]), Arc('bd',arcType, nodes[1],nodes[3]),
-  # Arc('cd', arcType, nodes[2], nodes[3]), Arc('de',arcType, nodes[3],nodes[4])]
-  # g = Graph('grafen',nodes, arcs)
-  # g.makeDot()
+  nodes = [Node('a', nodeType), Node('b', nodeType), Node('c', nodeType),
+  Node('d', nodeType), Node('e', nodeType)]
+  arcs = [Arc('ab',arcType,nodes[0],nodes[1]),
+  Arc('bc', arcType, nodes[1], nodes[2]), Arc('bd',arcType, nodes[1],nodes[3]),
+  Arc('cd', arcType, nodes[2], nodes[3]), Arc('de',arcType, nodes[3],nodes[4])]
+  g = Graph('grafen',nodes, arcs)
+  g.makeDot()
+  g.produceDot()
   # g.makeTokenSet()
   # # print(g.tokenset)
   # g.makeMatrices()
