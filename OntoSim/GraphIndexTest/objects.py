@@ -85,12 +85,12 @@ class Graph(object):
     """
     Not sure on how to do this one...
     Idea is to generate in fundamentally as objects. So list of objects is not
-    fundamental enought.
+    fundamental enough.
 
     Should this function be an object itself? Could be fun in that case...
 
     How does it work as a function?
-    List of indices?
+    List of indexes?
 
     I do not know...
 
@@ -108,8 +108,8 @@ class Graph(object):
 
   def makeMatrices(self):
     """
-    Fucntion that generate all the network matrices possible based on the size
-    of the index sets. All incidence matrices required and the corresponging
+    Function that generates all the network matrices possible based on the size
+    of the index sets. All incidence matrices required and the corresponding
     projection matrices.
     """
     self.matrices = {}
@@ -124,7 +124,7 @@ class IndexSet(object):
 
   To be combined  with the index set  already in OntoSim.  Started from scratch
   just because  it can provide some extra inspiration and the structure  of the
-  original class is really simple. So that migth be easier.
+  original class is really simple. So that might be easier.
 
   Day 2:
   Figured out that the index sets are (of course) defined before this file is
@@ -192,7 +192,7 @@ class IndexSet(object):
 
   def makeBlocking(blocking = []):
     """
-    Define sizes of the inneer blocks.
+    Define sizes of the inner blocks.
 
     Args:
       blocking: List with the sizes of the inner blocks
@@ -229,6 +229,8 @@ class Node(Graph):
     self.___refs___.append(self)
     self.label = label
     self.type = type
+    self.mechanisms = set()                     # Use sets to avoid duplication
+    self.tokens = type['token']
 
 class Arc(Graph):
   """
@@ -241,11 +243,15 @@ class Arc(Graph):
     self.type = type
     self.head = head
     self.tail = tail
+    self.addMechanismToNodes(type['mechanism'])     # Put mechanisms into nodes
+
+  def addMechanismToNodes(self, mechanism):
+    """Prepare subsets to head and tail"""
+    self.head.mechanisms |= {mechanism}           # Append to the mechanisms set
+    self.tail.mechanisms |= {mechanism}           # Append to the mechanisms set
 
 
 if __name__ == '__main__':
-
-
   # Generate the index sets file:
   indices = Common.indices.getIndexes()
   Common.indices.makeIndexFile()

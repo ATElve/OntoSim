@@ -1,8 +1,8 @@
 ###############################################################################
-#	 Purpose: Prepare the index sets
-#	 Author:  Arne Tobias Elve
-#	 Date:    Tue Jul  4 10:52:05 2017
-#	 Why:     To make the index sets with correct names
+#	 Purpose: Prepare the index sets                                            #
+#	 Author:  Arne Tobias Elve                                                  #
+#	 When:    2017-07-04 15:53:26                                               #
+#	 Why:     To make the index sets with correct names                         #
 ###############################################################################
 N = IndexSet(indices["node"])
 A = IndexSet(indices["arc"])
