@@ -37,11 +37,15 @@ class Graph(object):
   def makeDot(self):
     with open(self.dotfile, 'w') as dotfile:
       # PREAMBLE
+      purpose = '#\t Purpose: Dot graph for equation tree'
+      author =  '#\t Author:  Arne Tobias Elve'
+      date =    '#\t When:    {}'.format(strftime("%Y-%m-%d %H:%M:%S"))
+      reason =  '#\t Why:     Output to dot language '
       dotfile.write('#'*79+'\n')
-      dotfile.write('#\t Purpose: Dot graph for equation tree.\n')
-      dotfile.write('#\t Author:  Arne Tobias Elve\n')
-      dotfile.write('#\t Date:    {0}\n'.format(strftime("%Y-%m-%d %H:%M:%S")))
-      dotfile.write('#\t Why:     Output to dot language \n')
+      dotfile.write('{0:78}#\n'.format(purpose))
+      dotfile.write('{0:78}#\n'.format(author))
+      dotfile.write('{0:78}#\n'.format(date))
+      dotfile.write('{0:78}#\n'.format(reason))
       dotfile.write('#'*79+'\n')
       dotfile.write('graph G {\n')
       dotfile.write('rankdir = "LR"\n')

@@ -1,7 +1,7 @@
 ###############################################################################
 #	 Purpose: Prepare the index sets                                            #
 #	 Author:  Arne Tobias Elve                                                  #
-#	 When:    2017-07-04 15:53:26                                               #
+#	 When:    2017-07-04 16:04:52                                               #
 #	 Why:     To make the index sets with correct names                         #
 ###############################################################################
 N = IndexSet(indices["node"])
