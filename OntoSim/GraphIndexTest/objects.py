@@ -17,6 +17,7 @@ from time import asctime, localtime, time                    # Library for time
 import os                                                    # Operating system
 import numpy as np
 import OntoSim
+import Common.indices
 
 class Graph(object):
   """Object representation of the topology of the model"""
@@ -116,20 +117,60 @@ class IndexSet(object):
   is done according to the nodes and the arcs.
   """
   ___refs___ = []                               # All indexing sets in sequence
-  def __init__(self,  symbol,                                   # UNIQUE SYMBOL
-                      mapping = [],               # MAPPING OVER TO TO SUPERSET
-                      sets = [],                    # COMBINATION OF WHICH SETS
-                      blocking = [],                         # BLOCK DEFINITION
-                      superset = None,                 # PART OF WITCH SUPERSET
-              ):
-    self.blocking = blocking
-    self.superset = superset
-    self.symbol = symbol
-    self.mapping = mapping
-    self.sets = sets
-    if superset == None:
-      self.superset = self
+  # def __init__(self,  symbol,                                   # UNIQUE SYMBOL
+  #                     mapping = [],               # MAPPING OVER TO TO SUPERSET
+  #                     sets = [],                    # COMBINATION OF WHICH SETS
+  #                     blocking = [],                         # BLOCK DEFINITION
+  #                     superset = None,                 # PART OF WITCH SUPERSET
+  #             ):
+  #   self.blocking = blocking
+  #   self.superset = superset
+  #   self.symbol = symbol
+  #   self.mapping = mapping
+  #   self.sets = sets
+  #   if superset == None:
+  #     self.superset = self
+
+  def __init__(self, indexSet):
+    """
+    Init set from index dict
+
+    Args:
+      ..: indexSet: Index dict
+
+    Produces:
+      ..: populate object
+    """
     self.___refs___.append(self)
+    self.aliases = indexSet['aliases']
+    self.symbol = indexSet['symbol']
+    self.layer = indexSet['layer']
+    self.type = indexSet['type']
+    self.name = indexSet['aliases'][0][1]
+    try:
+      self.str = indexSet['str']
+    except:
+      self.str = ''
+    try:
+      self.super = indexSet['super']
+    except:
+      self.super = None
+    try:
+      self.sub = indexSet['sub']
+    except:
+      self.sub = None
+    try:
+      self.inner = indexSet['inner']
+    except:
+      self.inner = None
+    try:
+      self.outher = indexSet['outher']
+    except:
+      self.outher = None
+
+
+  def populateSet(self):
+    pass
 
   def printSet(self):
     print('symbol = ', self.symbol)
@@ -163,18 +204,31 @@ class Arc(Graph):
 
 
 if __name__ == '__main__':
-  nodeType = {'dimensionality':'0', 'dynamics':'lumped', 'token':'mass'}
-  arcType = {'token':'mass', 'mechanism':'volumetic'}
-  # n1 = Node('a',type1)
-  # n2 = Node('b',type1)
-  nodes = [Node('a', nodeType), Node('b', nodeType), Node('c', nodeType),
-  Node('d', nodeType), Node('e', nodeType)]
-  arcs = [Arc('ab',arcType,nodes[0],nodes[1]),
-  Arc('bc', arcType, nodes[1], nodes[2]), Arc('bd',arcType, nodes[1],nodes[3]),
-  Arc('cd', arcType, nodes[2], nodes[3]), Arc('de',arcType, nodes[3],nodes[4])]
-  g = Graph('grafen',nodes, arcs)
-  g.makeDot()
-  g.makeTokenSet()
-  # print(g.tokenset)
-  g.makeMatrices()
+
+
+  # Generate the index sets file:
+  indices = Common.indices.getIndexes()
+  Common.indices.makeIndexFile()
+  exec(open('Common/indexSets.py').read())
+  # print(N.type)
+  # for ind in N.___refs___:
+    # print(ind.name)
+
+  #
+  # nodeType = {'dimensionality':'0', 'dynamics':'lumped', 'token':'mass'}
+  # arcType = {'token':'mass', 'mechanism':'volumetic'}
+  # # n1 = Node('a',type1)
+  # # n2 = Node('b',type1)
+  # nodes = [Node('a', nodeType), Node('b', nodeType), Node('c', nodeType),
+  # Node('d', nodeType), Node('e', nodeType)]
+  # arcs = [Arc('ab',arcType,nodes[0],nodes[1]),
+  # Arc('bc', arcType, nodes[1], nodes[2]), Arc('bd',arcType, nodes[1],nodes[3]),
+  # Arc('cd', arcType, nodes[2], nodes[3]), Arc('de',arcType, nodes[3],nodes[4])]
+  # g = Graph('grafen',nodes, arcs)
+  # g.makeDot()
+  # g.makeTokenSet()
+  # # print(g.tokenset)
+  # g.makeMatrices()
+
+
   # a1 = Arc('a|b', type1, n1, n2)
