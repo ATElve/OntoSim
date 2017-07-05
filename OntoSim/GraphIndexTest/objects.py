@@ -6,14 +6,14 @@ Author:  Arne Tobias Elve
 Since:   2017-06-28
 Where:   Department of Chemical Engineering
 Contact: arne.t.elve(at)ntnu.no
-Why:     This is the test version to be presented to Heinz before this is
-         implemented into the project itself. This consist of the graph class
+Why:     This is  the test version  to be presented  to  Heinz  before  this is
+         implemented  into the project itself.  This consist of the graph class
          that is the parent of the node class and the arc class. Together these
          form the building blocks for the network representation.
 Update:  2017-06-28
 """
 
-from time import strftime, time                    # Library for time
+from time import strftime, time                              # Library for time
 import os                                                    # Operating system
 import numpy as np
 import OntoSim
@@ -98,7 +98,7 @@ class Graph(object):
   def makeIndex(self):
     """
     Not sure on how to do this one...
-    Idea is to generate in fundamentally as objects. So list of objects is not
+    Idea is to generate in fundamentally as objects.  So list of objects is not
     fundamental enough.
 
     Should this function be an object itself? Could be fun in that case...
@@ -108,8 +108,8 @@ class Graph(object):
 
     I do not know...
 
-    After sleeping on it I figured out that the indexsets already exist. It is
-    "just" the size of the index sets that are missing. The sizes must be
+    After sleeping on it I figured out that the index sets already exist. It is
+    "just" the dimensions of the index sets that are missing. The sizes must be
     determined by the already generated graph.
     """
     # Node references
@@ -127,7 +127,7 @@ class Graph(object):
     # n
     for i, node in enumerate(self.nodes):
       self.nmap.append(i)
-      self.nmapNode.append(node)               # This is a strict copy of self.nodes
+      self.nmapNode.append(node)          # This is a strict copy of self.nodes
       print(node.tokens)
       if 'mass' in node.tokens:
         self.nmass.append(i)
@@ -135,7 +135,7 @@ class Graph(object):
 
     for i, arc in enumerate(self.arcs):
       self.amap.append(i)
-      self.amapArc.append(Arc)                  # This is a strict copy of self.arcs
+      self.amapArc.append(Arc)             # This is a strict copy of self.arcs
       if 'mass' in arc.tokens:
         self.amass.append(i)
         self.amassArc.append(arc)
@@ -152,7 +152,7 @@ class Graph(object):
   def makeMatrices(self):
     """
     Function that generates all the network matrices possible based on the size
-    of the index sets. All incidence matrices required and the corresponding
+    of  the index sets.  All incidence matrices required  and the corresponding
     projection matrices.
     """
     self.matrices = {}
@@ -193,8 +193,8 @@ class IndexSet(object):
   original class is really simple. So that might be easier.
 
   Day 2:
-  Figured out that the index sets are (of course) defined before this file is
-  used. At this stage the job is to define the size of the index set and that
+  Figured out  that the index sets are  (of course) defined before this file is
+  used. At this stage  the job is to define the size of  the index set and that
   is done according to the nodes and the arcs.
   """
   ___refs___ = []                               # All indexing sets in sequence
