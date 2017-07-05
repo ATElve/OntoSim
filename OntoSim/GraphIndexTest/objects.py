@@ -72,8 +72,9 @@ class Graph(object):
 
     This is  used to inject species in the graph.  The injection can only occur
     in an reservoir.  This function  does only inject the species.  It does not
-    propogate at this location. That is carried out in other functions.
+    propagate at this location. That is carried out in other functions.
     """
+    pass
 
   def makeTokenSet(self):
     """
@@ -83,6 +84,15 @@ class Graph(object):
     self.tokenset = set()
     for node in nodes:
       self.tokenset |= {node.type['token']}
+
+  def getTokenSet(self):
+    """Retrieve the available token set"""
+    try:
+      return self.tokenset
+    except Exception as e:
+      print(e.args[0])
+      print('Token set does not exist, returning empty set')
+      return set()
 
 
   def makeIndex(self):
@@ -102,12 +112,41 @@ class Graph(object):
     "just" the size of the index sets that are missing. The sizes must be
     determined by the already generated graph.
     """
-    nmap = []
-    # n
-    for i,node in enumerate(nodes):
-      nmap.append(i)
-      # if
+    # Node references
+    self.nmap = []
+    self.nmapNode = []
+    self.nmass = []
+    self.nmassNode = []
 
+    # Arc references
+    self.amap = []
+    self.amapArc = []
+    self.amass = []
+    self.amassArc = []
+
+    # n
+    for i, node in enumerate(self.nodes):
+      self.nmap.append(i)
+      self.nmapNode.append(node)               # This is a strict copy of self.nodes
+      print(node.tokens)
+      if 'mass' in node.tokens:
+        self.nmass.append(i)
+        self.nmassNode.append(node)
+
+    for i, arc in enumerate(self.arcs):
+      self.amap.append(i)
+      self.amapArc.append(Arc)                  # This is a strict copy of self.arcs
+      if 'mass' in arc.tokens:
+        self.amass.append(i)
+        self.amassArc.append(arc)
+      # if
+    # Prepare the set sizes
+    A.makeMapping(self.amap)
+    A.makeBlocking([1] * np.size(self.amap))
+    N.makeMapping(self.nmap)
+    N.makeBlocking([1] * np.size(self.nmap))
+
+    self.makeMatrix(self.nmassNode, self.amassArc)
     # self.N = IndexSet('N',nmap,)
 
   def makeMatrices(self):
@@ -117,11 +156,34 @@ class Graph(object):
     projection matrices.
     """
     self.matrices = {}
-    for token in self.tokenset:
+    for token in self.tokens:
       matrix = []
       # local
 
+  def makeMatrix(self, nodelist, arclist):
+    """
+    Produce incidence matrix based on nodelist and arclist
 
+    Args:
+      nodelist: Local nodelist in this matrix
+      arclist:  Local arclist in this matrix
+    Returns:
+      matrix: Produced
+    """
+    mat = np.zeros((np.size(nodelist),np.size(arclist)))
+    for i,node in enumerate(nodelist):                          # For every row
+      for j,arc in enumerate(arclist):                 # For column in that row
+        if arc.tail == node:                     # Check if tail is current row
+          mat[i,j] = -1
+        elif arc.head == node:                   # Check if head is current row
+          mat[i,j] = 1
+    return mat                        # Return the value of the produced matrix
+
+
+
+###############################################################################
+#                                  INDEXSETS                                  #
+###############################################################################
 class IndexSet(object):
   """
   The index set class.
@@ -137,19 +199,6 @@ class IndexSet(object):
   """
   ___refs___ = []                               # All indexing sets in sequence
   indices = Common.indices.getIndexes() # Read in the complete index dictionary
-  # def __init__(self,  symbol,                                 # UNIQUE SYMBOL
-  #                     mapping = [],             # MAPPING OVER TO TO SUPERSET
-  #                     sets = [],                  # COMBINATION OF WHICH SETS
-  #                     blocking = [],                       # BLOCK DEFINITION
-  #                     superset = None,               # PART OF WITCH SUPERSET
-  #             ):
-  #   self.blocking = blocking
-  #   self.superset = superset
-  #   self.symbol = symbol
-  #   self.mapping = mapping
-  #   self.sets = sets
-  #   if superset == None:
-  #     self.superset = self
 
   def __init__(self, indexSet):
     """
@@ -185,16 +234,16 @@ class IndexSet(object):
       self.inner = eval(self.indices[indexSet['inner']]['aliases'][0][1])
     except:
       self.inner = None
-    try:                                                      # Outher blocking
+    try:                                                       # Outer blocking
       self.outher = eval(self.indices[indexSet['outher']]['aliases'][0][1])
     except:
       self.outher = None
     # The rest is preparing what to come
-    self.blocking = []               # Size of the inner blocking in the outher
+    self.blocking = []                # Size of the inner blocking in the outer
     self.mapping = []              # Representation into the superset or itself
 
 
-  def makeBlocking(blocking = []):
+  def makeBlocking(self, blocking = []):
     """
     Define sizes of the inner blocks.
 
@@ -203,9 +252,9 @@ class IndexSet(object):
 
     Populate the blocking variable. This maps over to the mapping
     """
-    pass
+    self.blocking = blocking
 
-  def makeMapping(mapping = []):
+  def makeMapping(self, mapping = []):
     """
     Make mapping over to super set.
 
@@ -214,7 +263,7 @@ class IndexSet(object):
 
     If no super set the set is defined as its own super set.
     """
-    pass
+    self.mapping = mapping
 
   def __str__(self):                         # The name in the current language
     return self.name
@@ -234,7 +283,7 @@ class Node(Graph):
     self.label = label
     self.type = type
     self.mechanisms = set()                     # Use sets to avoid duplication
-    self.tokens = type['token']
+    self.tokens = set([type['token']])      # Use sets to avoid duplication
 
 class Arc(Graph):
   """
@@ -247,13 +296,20 @@ class Arc(Graph):
     self.type = type
     self.head = head
     self.tail = tail
+    self.tokens = set([type['token']])          # Use sets to avoid duplication
     self.addMechanismToNodes(type['mechanism'])     # Put mechanisms into nodes
 
   def addMechanismToNodes(self, mechanism):
-    """Prepare subsets to head and tail"""
-    self.head.mechanisms |= {mechanism}           # Append to the mechanisms set
-    self.tail.mechanisms |= {mechanism}           # Append to the mechanisms set
+    """Prepare subsets to head and tail nodes"""
+    self.head.mechanisms |= {mechanism}          # Append to the mechanisms set
+    self.tail.mechanisms |= {mechanism}          # Append to the mechanisms set
 
+  def addTokenToNodes(self):
+    """Prepare subsets to head and tail nodes"""
+    print('esel')
+    print(self.tokens)
+    self.head.tokens |= self.tokens                  # Append to the tokens set
+    self.tail.tokens |= self.tokens                  # Append to the tokens set
 
 if __name__ == '__main__':
   # Generate the index sets file:
@@ -264,21 +320,27 @@ if __name__ == '__main__':
 
 
   #
-  nodeType = {'dimensionality':'0', 'dynamics':'lumped', 'token':'mass'}
+  massReservoir = {'dimensionality':0, 'behaviour':'reservoir', 'token':'mass'}
+  nodeType = {'dimensionality':0, 'dynamics':'lumped', 'token':'mass'}
   arcType = {'token':'mass', 'mechanism':'volumetic'}
   # # n1 = Node('a',type1)
   # # n2 = Node('b',type1)
-  nodes = [Node('a', nodeType), Node('b', nodeType), Node('c', nodeType),
-  Node('d', nodeType), Node('e', nodeType)]
+  nodes = [Node('a', massReservoir), Node('b', nodeType), Node('c', nodeType),
+  Node('d', nodeType), Node('e', massReservoir)]
   arcs = [Arc('ab',arcType,nodes[0],nodes[1]),
   Arc('bc', arcType, nodes[1], nodes[2]), Arc('bd',arcType, nodes[1],nodes[3]),
   Arc('cd', arcType, nodes[2], nodes[3]), Arc('de',arcType, nodes[3],nodes[4])]
   g = Graph('grafen',nodes, arcs)
   g.makeDot()
   g.produceDot()
-  # g.makeTokenSet()
+  g.makeTokenSet()
+  print(g.getTokenSet())
+  g.makeIndex()
   # # print(g.tokenset)
   # g.makeMatrices()
-
+  # for ind in A.___refs___:
+    # print(ind)
+  # print(N.mapping)
+  # print(N.blocking)
 
   # a1 = Arc('a|b', type1, n1, n2)
