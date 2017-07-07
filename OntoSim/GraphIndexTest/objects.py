@@ -18,6 +18,7 @@ import os                                                    # Operating system
 import numpy as np
 import OntoSim
 import Common.indices
+import json                                               # JSON format library
 
 class Graph(object):
   """Object representation of the topology of the model"""
@@ -146,9 +147,11 @@ class Graph(object):
     N.makeMapping(self.nmap)
     N.makeBlocking([1] * np.size(self.nmap))
 
-    self.makeMatrix(self.nmassNode, self.amassArc)
+    F  = self.makeMatrix(self.nodes, self.arcs)
+    Fm = self.makeMatrix(self.nmassNode, self.amassArc)
     # self.N = IndexSet('N',nmap,)
-
+    print(F)
+    print(Fm)
   def makeMatrices(self):
     """
     Function that generates all the network matrices possible based on the size
@@ -273,17 +276,29 @@ class IndexSet(object):
 
 
 class Node(Graph):
-  """inner
+  """
   Each node included in the graph.
   """
   ___refs___ = []
 
-  def __init__(self, label, type):
+  def __init__(self, label, type, tokens = [], mechanisms = []):
     self.___refs___.append(self)
     self.label = label
     self.type = type
-    self.mechanisms = set()                     # Use sets to avoid duplication
-    self.tokens = set([type['token']])      # Use sets to avoid duplication
+    self.mechanisms = mechanisms
+    if tokens:
+      self.tokens = tokens
+    else:
+      self.tokens = list([type['token']])
+
+  def makeJson(self):
+    return json.dumps(self.__dict__)
+
+  def addMechanism(self, mechanism):
+    self.mechanisms = list(set(self.mechanisms).union(set([mechanism])))
+
+  def addToken(self, tokens):
+    self.tokens = list(set(self.tokens).union(set(tokens)))
 
 class Arc(Graph):
   """
@@ -296,20 +311,27 @@ class Arc(Graph):
     self.type = type
     self.head = head
     self.tail = tail
-    self.tokens = set([type['token']])          # Use sets to avoid duplication
+    self.tokens = list([type['token']])         # Use sets to avoid duplication
     self.addMechanismToNodes(type['mechanism'])     # Put mechanisms into nodes
+    self.addTokenToNodes()
 
   def addMechanismToNodes(self, mechanism):
     """Prepare subsets to head and tail nodes"""
-    self.head.mechanisms |= {mechanism}          # Append to the mechanisms set
-    self.tail.mechanisms |= {mechanism}          # Append to the mechanisms set
+    self.head.addMechanism(mechanism)
+    self.tail.addMechanism(mechanism)
+    # self.head.mechanisms |= {mechanism}          # Append to the mechanisms set
+    # self.tail.mechanisms |= {mechanism}          # Append to the mechanisms set
 
   def addTokenToNodes(self):
     """Prepare subsets to head and tail nodes"""
-    print('esel')
-    print(self.tokens)
-    self.head.tokens |= self.tokens                  # Append to the tokens set
-    self.tail.tokens |= self.tokens                  # Append to the tokens set
+    self.head.addToken(self.tokens)
+    self.tail.addToken(self.tokens)
+
+  def keys(self):
+    self.__dict__.keys()
+
+  def makeJsonObj(self):
+    return json.dumps(self.__dict__)
 
 if __name__ == '__main__':
   # Generate the index sets file:
@@ -336,6 +358,7 @@ if __name__ == '__main__':
   g.makeTokenSet()
   print(g.getTokenSet())
   g.makeIndex()
+  print(nodes[0].makeJson())
   # # print(g.tokenset)
   # g.makeMatrices()
   # for ind in A.___refs___:
