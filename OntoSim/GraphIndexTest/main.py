@@ -14,5 +14,13 @@ Update:  2017-06-28
 """
 
 from objects import *
+import json
 
 """comment"""
+
+
+fileLoc = 'Common/batch_01_tokens.json'
+
+with open(fileLoc) as data_file:
+  data = json.load(data_file)
+  print(data['nodes'])

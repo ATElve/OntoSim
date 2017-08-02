@@ -10,7 +10,8 @@ Why:     This is  the test version  to be presented  to  Heinz  before  this is
          implemented  into the project itself.  This consist of the graph class
          that is the parent of the node class and the arc class. Together these
          form the building blocks for the network representation.
-Update:  2017-06-28
+Update:  2017-06-28: Started
+         2017-08-01: Introduced the json format for storage of the graph.
 """
 
 from time import strftime, time                              # Library for time
@@ -22,17 +23,27 @@ import json                                               # JSON format library
 
 class Graph(object):
   """Object representation of the topology of the model"""
-  def __init__(self,name, nodes, arcs):
+  def __init__(self,name):
     super(Graph, self).__init__()
+    self.graphFile = 'Common/batch_01_tokens.json'
     self.name = name                                        # Name of the model
-    self.nodes = nodes                                          # List of nodes
-    self.arcs = arcs                                             # List of arcs
+    # self.nodes = nodes                                        # List of nodes
+    # self.arcs = arcs                                           # List of arcs
+
+    self.loadGraphFromJson()
+
 
     # STORAGE CONTAINERS #
     self.dotfile = 'DOT/test.dot'
     self.pdffile = 'DOT/test.pdf'
-    self.tokenMass = 'mass'
-    self.tokenEnergy = 'energy'
+    # self.tokenMass = 'mass'
+    # self.tokenEnergy = 'energy'
+
+  def loadGraphFromJson(self):
+    """Read in graph file from JSON file"""
+    with open(self.graphFile) as data_file:
+      self.graph = json.load(data_file)          # Store dictionary into object
+
 
 
   def makeDot(self):
@@ -152,6 +163,8 @@ class Graph(object):
     # self.N = IndexSet('N',nmap,)
     print(F)
     print(Fm)
+
+
   def makeMatrices(self):
     """
     Function that generates all the network matrices possible based on the size
@@ -281,15 +294,14 @@ class Node(Graph):
   """
   ___refs___ = []
 
-  def __init__(self, label, type, tokens = [], mechanisms = []):
+  def __init__(self, label, type, tokens = []):
     self.___refs___.append(self)
+    self.name = name
     self.label = label
     self.type = type
-    self.mechanisms = mechanisms
-    if tokens:
-      self.tokens = tokens
-    else:
-      self.tokens = list([type['token']])
+    self.tier = tier
+    self.network = network
+    self.tokens = tokens
 
   def makeJson(self):
     return json.dumps(self.__dict__)
@@ -319,8 +331,8 @@ class Arc(Graph):
     """Prepare subsets to head and tail nodes"""
     self.head.addMechanism(mechanism)
     self.tail.addMechanism(mechanism)
-    # self.head.mechanisms |= {mechanism}          # Append to the mechanisms set
-    # self.tail.mechanisms |= {mechanism}          # Append to the mechanisms set
+    # self.head.mechanisms |= {mechanism}        # Append to the mechanisms set
+    # self.tail.mechanisms |= {mechanism}        # Append to the mechanisms set
 
   def addTokenToNodes(self):
     """Prepare subsets to head and tail nodes"""
@@ -334,36 +346,4 @@ class Arc(Graph):
     return json.dumps(self.__dict__)
 
 if __name__ == '__main__':
-  # Generate the index sets file:
-  indices = Common.indices.getIndexes()
-  Common.indices.makeIndexFile()
-  exec(open('Common/indexSets.py').read())
-  # print(N.type)
-
-
-  #
-  massReservoir = {'dimensionality':0, 'behaviour':'reservoir', 'token':'mass'}
-  nodeType = {'dimensionality':0, 'dynamics':'lumped', 'token':'mass'}
-  arcType = {'token':'mass', 'mechanism':'volumetic'}
-  # # n1 = Node('a',type1)
-  # # n2 = Node('b',type1)
-  nodes = [Node('a', massReservoir), Node('b', nodeType), Node('c', nodeType),
-  Node('d', nodeType), Node('e', massReservoir)]
-  arcs = [Arc('ab',arcType,nodes[0],nodes[1]),
-  Arc('bc', arcType, nodes[1], nodes[2]), Arc('bd',arcType, nodes[1],nodes[3]),
-  Arc('cd', arcType, nodes[2], nodes[3]), Arc('de',arcType, nodes[3],nodes[4])]
-  g = Graph('grafen',nodes, arcs)
-  g.makeDot()
-  g.produceDot()
-  g.makeTokenSet()
-  print(g.getTokenSet())
-  g.makeIndex()
-  print(nodes[0].makeJson())
-  # # print(g.tokenset)
-  # g.makeMatrices()
-  # for ind in A.___refs___:
-    # print(ind)
-  # print(N.mapping)
-  # print(N.blocking)
-
-  # a1 = Arc('a|b', type1, n1, n2)
+  g = Graph('TESTGRAPH')

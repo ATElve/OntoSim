@@ -1,0 +1,440 @@
+{
+  "arcs": {
+    "0": {
+      "token": "mass",
+      "sink": 1,
+      "name": "5 | 7",
+      "network": "ontology_physical_gas",
+      "type": "uni-directional",
+      "mechanism": "v",
+      "source": 4
+    },
+    "1": {
+      "token": "mass",
+      "sink": 8,
+      "name": "1 | 3",
+      "network": "ontology_physical_liquid",
+      "type": "uni-directional",
+      "mechanism": "v",
+      "source": 9
+    },
+    "2": {
+      "token": "mass",
+      "sink": 7,
+      "name": "3 | 2",
+      "network": "ontology_physical_liquid",
+      "type": "uni-directional",
+      "mechanism": "v",
+      "source": 8
+    },
+    "3": {
+      "token": "mass",
+      "sink": 5,
+      "name": "5 | 6",
+      "network": "ontology_physical_gas",
+      "type": "uni-directional",
+      "mechanism": "d",
+      "source": 4
+    },
+    "4": {
+      "token": "energy",
+      "sink": 6,
+      "name": "3 | 4",
+      "network": "ontology_physical_liquid",
+      "type": "uni-directional",
+      "mechanism": "c",
+      "source": 8
+    },
+    "5": {
+      "token": "mass",
+      "sink": 5,
+      "name": "4 | 6",
+      "network": "ontology_physical_liquid",
+      "type": "uni-directional",
+      "mechanism": "d",
+      "source": 6
+    }
+  },
+  "scenes": {
+    "8": {
+      "nodes": {},
+      "arcs": {
+        "2": [],
+        "4": [],
+        "1": []
+      }
+    },
+    "4": {
+      "nodes": {},
+      "arcs": {
+        "0": [],
+        "3": []
+      }
+    },
+    "7": {
+      "nodes": {},
+      "arcs": {
+        "2": []
+      }
+    },
+    "9": {
+      "nodes": {},
+      "arcs": {
+        "1": []
+      }
+    },
+    "6": {
+      "nodes": {},
+      "arcs": {
+        "4": [],
+        "5": []
+      }
+    },
+    "1": {
+      "nodes": {},
+      "arcs": {
+        "0": []
+      }
+    },
+    "5": {
+      "nodes": {},
+      "arcs": {
+        "3": [],
+        "5": []
+      }
+    },
+    "2": {
+      "nodes": {
+        "6": {
+          "position_y": 20.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": -159.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        },
+        "5": {
+          "position_y": 21.0,
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": 22.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          }
+        },
+        "4": {
+          "position_y": 20.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": 179.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        }
+      },
+      "arcs": {
+        "0": [],
+        "4": [],
+        "3": [],
+        "5": []
+      }
+    },
+    "3": {
+      "nodes": {
+        "8": {
+          "position_y": 95.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": -67.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        },
+        "7": {
+          "position_y": 22.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": -250.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        },
+        "9": {
+          "position_y": 149.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": -255.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        }
+      },
+      "arcs": {
+        "2": [],
+        "4": [],
+        "1": []
+      }
+    },
+    "0": {
+      "nodes": {
+        "1": {
+          "position_y": -107.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": 166.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        },
+        "2": {
+          "position_y": 91.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": 164.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        },
+        "3": {
+          "position_y": 95.0,
+          "network": {
+            "position_y": 0,
+            "position_x": 0
+          },
+          "position_x": -137.0,
+          "name": {
+            "position_y": 50,
+            "position_x": 0
+          },
+          "root": {
+            "position_y": 0,
+            "position_x": 0
+          }
+        }
+      },
+      "arcs": {
+        "0": [],
+        "4": []
+      }
+    }
+  },
+  "nodes": {
+    "8": {
+      "network": "ontology_physical_liquid",
+      "type": "dynamic_0D",
+      "class": "node_simple",
+      "tokens": {
+        "mass": [],
+        "energy": []
+      },
+      "name": "jacket"
+    },
+    "4": {
+      "network": "ontology_physical_gas",
+      "type": "dynamic_0D",
+      "class": "node_simple",
+      "tokens": {
+        "mass": []
+      },
+      "name": "gas  ph"
+    },
+    "7": {
+      "network": "ontology_physical_liquid",
+      "type": "constant",
+      "class": "node_simple",
+      "tokens": {
+        "mass": []
+      },
+      "name": "cold"
+    },
+    "9": {
+      "network": "ontology_physical_liquid",
+      "type": "constant",
+      "class": "node_simple",
+      "tokens": {
+        "mass": []
+      },
+      "name": "hot"
+    },
+    "6": {
+      "network": "ontology_physical_liquid",
+      "type": "dynamic_0D",
+      "class": "node_simple",
+      "tokens": {
+        "mass": [],
+        "energy": []
+      },
+      "name": "liq ph"
+    },
+    "1": {
+      "network": "ontology_physical_gas",
+      "type": "constant",
+      "class": "node_simple",
+      "tokens": {
+        "mass": []
+      },
+      "name": "room"
+    },
+    "5": {
+      "network": "ontology_physical_gas -|- ontology_physical_liquid",
+      "type": "event",
+      "class": "node_boundary",
+      "tokens": {
+        "mass": []
+      },
+      "name": "wall"
+    },
+    "2": {
+      "network": "ontology_physical_gas",
+      "type": "node_composite",
+      "class": "node_composite",
+      "tokens": {},
+      "name": "vessel"
+    },
+    "3": {
+      "network": "ontology_physical_gas",
+      "type": "node_composite",
+      "class": "node_composite",
+      "tokens": {},
+      "name": "H/C"
+    },
+    "0": {
+      "network": null,
+      "type": "node_composite",
+      "class": "node_composite",
+      "tokens": {},
+      "name": "0"
+    }
+  },
+  "ID_tree": {
+    "8": {
+      "children": [],
+      "ancestors": [
+        3,
+        0
+      ]
+    },
+    "4": {
+      "children": [],
+      "ancestors": [
+        2,
+        0
+      ]
+    },
+    "0": {
+      "children": [
+        1,
+        2,
+        3
+      ],
+      "ancestors": []
+    },
+    "9": {
+      "children": [],
+      "ancestors": [
+        3,
+        0
+      ]
+    },
+    "6": {
+      "children": [],
+      "ancestors": [
+        2,
+        0
+      ]
+    },
+    "1": {
+      "children": [],
+      "ancestors": [
+        0
+      ]
+    },
+    "5": {
+      "children": [],
+      "ancestors": [
+        2,
+        0
+      ]
+    },
+    "2": {
+      "children": [
+        4,
+        5,
+        6
+      ],
+      "ancestors": [
+        0
+      ]
+    },
+    "3": {
+      "children": [
+        7,
+        8,
+        9
+      ],
+      "ancestors": [
+        0
+      ]
+    },
+    "7": {
+      "children": [],
+      "ancestors": [
+        3,
+        0
+      ]
+    }
+  }
+}
