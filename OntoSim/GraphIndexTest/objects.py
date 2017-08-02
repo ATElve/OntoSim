@@ -74,15 +74,26 @@ class Graph(object):
       dotfile.write('{0:78}#\n'.format(date))
       dotfile.write('{0:78}#\n'.format(reason))
       dotfile.write('#'*79+'\n')
-      dotfile.write('graph G {\n')
+      dotfile.write('digraph G {\n')
       dotfile.write('rankdir = "LR"\n')
       # NODES
-      for node in self.nodes:
-        dotfile.write(node.label +' [style = filled, fillcolor = Tomato];\n')
+      for label, node in self.nodes.items():
+        # if node[1]
+        style = 'filled'                                        # Default shape
+        marking = ''                                            # Default label
+        fillcolor = 'Tomato'                                    # Default color
+        if node.type == 'node_composite':
+          continue                                          # Check if grouping
+        elif node.type == 'constant':                               # Reservoir
+          fillcolor = 'Gold1'
+        elif node.type == 'event':
+          fillcolor = 'Snow4'
+
+        dotfile.write(node.label +' [style = {}, label = "{}" fillcolor = {}];\n'.format(style, node.name, fillcolor))
       # EDGES
-      for arc in self.arcs:
-        dotfile.write(arc.head.label + ' -- ' + arc.tail.label +
-        '[ label = ' + arc.label +'];\n')
+      for label, arc in self.arcs.items():
+        dotfile.write(str(arc.source) + ' -> ' + str(arc.sink) +
+        '[ label = "' + arc.name +'"];\n')
       # FINISH FILE
       dotfile.write('}')
 
@@ -105,7 +116,11 @@ class Graph(object):
 
 
   def propagateToken(self):
+    """
+    This
+    """
     pass
+
   # def makeTokenSet(self):
   #   """
   #   Loop through  all the nodes and arc and find the tokens.  Preparing for the
@@ -336,8 +351,7 @@ class Arc(Graph):
     self.label = label
     self.__dict__.update(**dict)
 
-
-    print(self.__dict__)
+    # print(self.__dict__)
 
   def addMechanismToNodes(self, mechanism):
     """Prepare subsets to head and tail nodes"""
@@ -359,3 +373,5 @@ if __name__ == '__main__':
   g = Graph('TESTGRAPH')
   g.makeNodes()
   g.makeArcs()
+  g.makeDot()
+  g.produceDot()
