@@ -44,6 +44,21 @@ class Graph(object):
     with open(self.graphFile) as data_file:
       self.graph = json.load(data_file)          # Store dictionary into object
 
+  def makeNodes(self):
+    """
+    Loop trough all the nodes and generate node object.
+    """
+    self.nodes = {}                    # Use a dictionary for storing the nodes
+    for node in self.graph['nodes'].items():
+      self.nodes[node[0]] = Node(*node)
+
+  def makeArcs(self):
+    """
+    Generate the arc objects
+    """
+    self.arcs = {}
+    for arc in self.graph['arcs'].items():
+      self.arcs[arc[0]] = Arc(*arc)
 
 
   def makeDot(self):
@@ -52,7 +67,7 @@ class Graph(object):
       purpose = '#\t Purpose: Dot graph for equation tree'
       author =  '#\t Author:  Arne Tobias Elve'
       date =    '#\t When:    {}'.format(strftime("%Y-%m-%d %H:%M:%S"))
-      reason =  '#\t Why:     Output to dot language '
+      reason =  '#\t Why:     Output to dot language'
       dotfile.write('#'*79+'\n')
       dotfile.write('{0:78}#\n'.format(purpose))
       dotfile.write('{0:78}#\n'.format(author))
@@ -88,23 +103,26 @@ class Graph(object):
     """
     pass
 
-  def makeTokenSet(self):
-    """
-    Loop through  all the nodes and arc and find the tokens.  Preparing for the
-    index sets.
-    """
-    self.tokenset = set()
-    for node in nodes:
-      self.tokenset |= {node.type['token']}
 
-  def getTokenSet(self):
-    """Retrieve the available token set"""
-    try:
-      return self.tokenset
-    except Exception as e:
-      print(e.args[0])
-      print('Token set does not exist, returning empty set')
-      return set()
+  def propagateToken(self):
+    pass
+  # def makeTokenSet(self):
+  #   """
+  #   Loop through  all the nodes and arc and find the tokens.  Preparing for the
+  #   index sets.
+  #   """
+  #   self.tokenset = set()
+  #   for node in nodes:
+  #     self.tokenset |= {node.type['token']}
+
+  # def getTokenSet(self):
+  #   """Retrieve the available token set"""
+  #   try:
+  #     return self.tokenset
+  #   except Exception as e:
+  #     print(e.args[0])
+  #     print('Token set does not exist, returning empty set')
+  #     return set()
 
 
   def makeIndex(self):
@@ -294,14 +312,10 @@ class Node(Graph):
   """
   ___refs___ = []
 
-  def __init__(self, label, type, tokens = []):
+  def __init__(self, label, dict):
     self.___refs___.append(self)
-    self.name = name
     self.label = label
-    self.type = type
-    self.tier = tier
-    self.network = network
-    self.tokens = tokens
+    self.__dict__.update(**dict)
 
   def makeJson(self):
     return json.dumps(self.__dict__)
@@ -317,22 +331,18 @@ class Arc(Graph):
   Each arc included in the graph.
   """
   ___refs___ = []
-  def __init__(self, label, type, head, tail):
+  def __init__(self, label, dict):
     self.___refs___.append(self)
     self.label = label
-    self.type = type
-    self.head = head
-    self.tail = tail
-    self.tokens = list([type['token']])         # Use sets to avoid duplication
-    self.addMechanismToNodes(type['mechanism'])     # Put mechanisms into nodes
-    self.addTokenToNodes()
+    self.__dict__.update(**dict)
+
+
+    print(self.__dict__)
 
   def addMechanismToNodes(self, mechanism):
     """Prepare subsets to head and tail nodes"""
     self.head.addMechanism(mechanism)
     self.tail.addMechanism(mechanism)
-    # self.head.mechanisms |= {mechanism}        # Append to the mechanisms set
-    # self.tail.mechanisms |= {mechanism}        # Append to the mechanisms set
 
   def addTokenToNodes(self):
     """Prepare subsets to head and tail nodes"""
@@ -347,3 +357,5 @@ class Arc(Graph):
 
 if __name__ == '__main__':
   g = Graph('TESTGRAPH')
+  g.makeNodes()
+  g.makeArcs()
