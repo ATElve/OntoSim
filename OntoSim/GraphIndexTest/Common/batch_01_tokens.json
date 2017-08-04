@@ -23,7 +23,7 @@
       "sink": 7,
       "name": "3 | 2",
       "network": "ontology_physical_liquid",
-      "type": "uni-directional",
+      "type": "bi-directional",
       "mechanism": "v",
       "source": 8
     },

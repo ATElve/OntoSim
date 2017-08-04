@@ -75,7 +75,7 @@ class Graph(object):
       dotfile.write('{0:78}#\n'.format(reason))
       dotfile.write('#'*79+'\n')
       dotfile.write('digraph G {\n')
-      dotfile.write('rankdir = "LR"\n')
+      # dotfile.write('rankdir = "LR"\n')
       # NODES
       for label, node in self.nodes.items():
         # if node[1]
@@ -89,16 +89,21 @@ class Graph(object):
         elif node.type == 'event':
           fillcolor = 'Snow4'
 
-        dotfile.write(node.label +' [style = {}, label = "{}" fillcolor = {}];\n'.format(style, node.name, fillcolor))
+        dotfile.write('{} [style = {}, label = "{}" fillcolor = {}];\n'.format(label, style, node.name, fillcolor))
       # EDGES
       for label, arc in self.arcs.items():
-        dotfile.write(str(arc.source) + ' -> ' + str(arc.sink) +
-        '[ label = "' + arc.name +'"];\n')
+        arcColor = 'Black'
+        arrowtype = 'arrowhead = normal'
+        if arc.token == 'energy':
+          arcColor = 'Firebrick1'
+        if arc.type == 'bi-directional':
+          arrowtype = 'arrowtail = onormal, dir = both'
+        dotfile.write('{} -> {} [label = "{}", {}, color = {}];\n'.format(arc.source, arc.sink, arc.name, arrowtype, arcColor))
       # FINISH FILE
       dotfile.write('}')
 
   def produceDot(self):
-    os.system('dot -Tpdf {0} > {1}'.format(self.dotfile, self.pdffile))
+    os.system('dot -Tpdf {} > {}'.format(self.dotfile, self.pdffile))
 
   def injectSpecies(self, reservoir, species):
     """
@@ -170,7 +175,7 @@ class Graph(object):
     self.amassArc = []
 
     # n
-    for i, node in enumerate(self.nodes):
+    for i, (label, node) in enumerate(self.nodes.items()):
       self.nmap.append(i)
       self.nmapNode.append(node)          # This is a strict copy of self.nodes
       print(node.tokens)
@@ -178,10 +183,10 @@ class Graph(object):
         self.nmass.append(i)
         self.nmassNode.append(node)
 
-    for i, arc in enumerate(self.arcs):
+    for i, (label, arc) in enumerate(self.arcs.items()):
       self.amap.append(i)
-      self.amapArc.append(Arc)             # This is a strict copy of self.arcs
-      if 'mass' in arc.tokens:
+      self.amapArc.append(arc)             # This is a strict copy of self.arcs
+      if 'mass' == arc.token:
         self.amass.append(i)
         self.amassArc.append(arc)
       # if
@@ -260,6 +265,7 @@ class IndexSet(object):
     generated  from  the configuration  file representing  the ontology  of the
     model.
     """
+    print(indexSet)
     self.___refs___.append(self)                  # Making a list of references
     self.name = indexSet['aliases'][0][1]   # Used in this programming language
     self.aliases = indexSet['aliases']                            # All aliases
@@ -347,6 +353,13 @@ class Arc(Graph):
   """
   ___refs___ = []
   def __init__(self, label, dict):
+    """
+    Initiation of an arc object
+
+    Args:
+      label: The name of the arc used in the program
+      dict:  Dictionary containing all the defined properties.
+    """
     self.___refs___.append(self)
     self.label = label
     self.__dict__.update(**dict)
@@ -369,9 +382,17 @@ class Arc(Graph):
   def makeJsonObj(self):
     return json.dumps(self.__dict__)
 
+class Composite(Graph):
+  """The initiation of the """
+  def __init__(self, arg):
+    super(Composite, self).__init__()
+    self.arg = arg
+
+
 if __name__ == '__main__':
   g = Graph('TESTGRAPH')
   g.makeNodes()
   g.makeArcs()
-  g.makeDot()
-  g.produceDot()
+  g.makeIndex()
+  # g.makeDot()
+  # g.produceDot()
