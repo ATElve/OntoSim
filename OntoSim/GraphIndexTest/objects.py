@@ -89,7 +89,8 @@ class Graph(object):
         elif node.type == 'event':
           fillcolor = 'Snow4'
 
-        dotfile.write('{} [style = {}, label = "{}" fillcolor = {}];\n'.format(label, style, node.name, fillcolor))
+        dotfile.write('{} [style = {}, label = "{}" fillcolor = {}];\n' \
+        .format(label, style, node.name, fillcolor))
       # EDGES
       for label, arc in self.arcs.items():
         arcColor = 'Black'
@@ -364,6 +365,7 @@ class Arc(Graph):
     self.label = label
     self.__dict__.update(**dict)
 
+
     # print(self.__dict__)
 
   def addMechanismToNodes(self, mechanism):
@@ -393,6 +395,6 @@ if __name__ == '__main__':
   g = Graph('TESTGRAPH')
   g.makeNodes()
   g.makeArcs()
-  g.makeIndex()
-  # g.makeDot()
-  # g.produceDot()
+  # g.makeIndex()
+  g.makeDot()
+  g.produceDot()
