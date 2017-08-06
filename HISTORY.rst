@@ -14,3 +14,10 @@ History
 
 * Thermo library
 * Configuration files
+
+
+0.1.2 (2017-08-06)
+------------------
+
+* JSON format for configuration files
+* Graph operations
