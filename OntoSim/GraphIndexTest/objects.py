@@ -11,7 +11,7 @@ Why:     This is  the test version  to be presented  to  Heinz  before  this is
          that is the parent of the node class and the arc class. Together these
          form the building blocks for the network representation.
 Update:  2017-06-28: Started
-         2017-08-01: Introduced the json format for storage of the graph.
+         2017-08-01: Introduced the JSON format for storage of the graph.
 """
 
 from time import strftime, time                              # Library for time
@@ -22,6 +22,7 @@ import Common.indices
 import json                                               # JSON format library
 
 
+
 ###############################################################################
 #                                    Graph                                    #
 ###############################################################################
@@ -30,12 +31,16 @@ class Graph(object):
   """Object representation of the topology of the model"""
   def __init__(self,name):
     super(Graph, self).__init__()
-    self.graphFile = 'Common/batch_01_tokens.json'
+    self.graphFile = 'AutoGenFiles/batch_01_tokens.json'
+    self.typedTokensFile = 'AutoGenFiles/typed_tokens.json'
     self.name = name                                        # Name of the model
     # self.nodes = nodes                                        # List of nodes
     # self.arcs = arcs                                           # List of arcs
 
-    self.loadGraphFromJson()
+    self.loadGraphFromJson()             # Load in the graph from the JSON file
+    self.loadTypedTokens()        # Load in the typed tokens from the JSON file
+
+    self.makeTypedTokens()
 
 
     # STORAGE CONTAINERS #
@@ -48,6 +53,15 @@ class Graph(object):
     """Read in graph file from JSON file"""
     with open(self.graphFile) as data_file:
       self.graph = json.load(data_file)          # Store dictionary into object
+
+  def loadTypedTokens(self):
+    """
+    Read  in the automatically generated typed token file and upload  it to the
+    graph.
+    """
+    with open(self.typedTokensFile) as data_file:
+      self.typedTokens = json.load(data_file)    # Store dictionary into object
+
 
   def makeNodes(self):
     """
@@ -64,6 +78,27 @@ class Graph(object):
     self.arcs = {}
     for arc in self.graph['arcs'].items():
       self.arcs[arc[0]] = Arc(*arc)                   # Label and dict unpacked
+
+  def makeTypedTokens(self):
+    """
+    Loop  trough  ALL  the typed  tokens  and then  load in  the instances  and
+    possible conversions.
+    """
+    self.species = {}
+    # print(self.typedTokens['species']['instances'])
+    for species in self.typedTokens['species']['instances']:
+      self.species[species] = Species(species)
+
+    self.speciesConversion = {}
+    for conversion in self.typedTokens['species']['conversions']:
+      print(conversion)
+      label = '{} -> {}'.format(', '.join(conversion['reactants']), *conversion['products'])
+      # label = '{} -> {}'.format([', '.join[i for i in conversion]))
+      print(label)
+    # for label,species in self.typedTokens['species'].items():
+      # print(label)
+      # self.species[label] = Species(label,species)                # Label and dict
+
 
 
   def makeDot(self):
@@ -339,8 +374,9 @@ class Species(Graph):
   This class contain information about species in the graph
   """
   ___refs___ = []
-  def __init__(self):
+  def __init__(self, label):
     self.___refs___.append(self)
+    self.label = label
 
 
 class Conversion(Graph):
@@ -348,19 +384,21 @@ class Conversion(Graph):
   This class contain information about token conversion in the graph
   """
   ___refs___ = []
-  def __init__(self):
+  def __init__(self, reactants, products):
     self.___refs___.append(self)
+    self.reactants = reactants
+    self.products = products
+
 
 ###############################################################################
 #                                 TESTING                                     #
 ###############################################################################
 
-
 if __name__ == '__main__':
   # Common.indices.makeIndexFile()
   indices = Common.indices.getIndexes()
   exec(open('Common/indexSets.py').read())
-  print(A.aliases)
+  # print(A.aliases)
   g = Graph('TESTGRAPH')
   g.makeNodes()
   g.makeArcs()

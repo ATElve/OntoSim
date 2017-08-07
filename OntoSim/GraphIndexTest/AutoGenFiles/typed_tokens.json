@@ -1,0 +1,55 @@
+{
+  "input": {
+    "instances": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "conversions": []
+  },
+  "output": {
+    "instances": [
+      "A",
+      "B",
+      "C"
+    ],
+    "conversions": []
+  },
+  "species": {
+    "instances": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "conversions": [
+      {
+        "reactants": [
+          "A",
+          "D"
+        ],
+        "products": [
+          "B"
+        ]
+      },
+      {
+        "reactants": [
+          "B"
+        ],
+        "products": [
+          "C"
+        ]
+      },
+      {
+        "reactants": [
+          "C"
+        ],
+        "products": [
+          "D"
+        ]
+      }
+    ]
+  }
+}
