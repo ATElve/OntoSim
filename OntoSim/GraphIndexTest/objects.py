@@ -21,6 +21,11 @@ import OntoSim
 import Common.indices
 import json                                               # JSON format library
 
+
+###############################################################################
+#                                    Graph                                    #
+###############################################################################
+
 class Graph(object):
   """Object representation of the topology of the model"""
   def __init__(self,name):
@@ -50,7 +55,7 @@ class Graph(object):
     """
     self.nodes = {}                    # Use a dictionary for storing the nodes
     for node in self.graph['nodes'].items():
-      self.nodes[node[0]] = Node(*node)
+      self.nodes[node[0]] = Node(*node)               # Label and dict unpacked
 
   def makeArcs(self):
     """
@@ -58,7 +63,7 @@ class Graph(object):
     """
     self.arcs = {}
     for arc in self.graph['arcs'].items():
-      self.arcs[arc[0]] = Arc(*arc)
+      self.arcs[arc[0]] = Arc(*arc)                   # Label and dict unpacked
 
 
   def makeDot(self):
@@ -86,7 +91,7 @@ class Graph(object):
           continue                                          # Check if grouping
         elif node.type == 'constant':                               # Reservoir
           fillcolor = 'Gold1'
-        elif node.type == 'event':
+        elif node.type == 'event':                       # Event-dynamic system
           fillcolor = 'Snow4'
 
         dotfile.write('{} [style = {}, label = "{}" fillcolor = {}];\n' \
@@ -99,51 +104,13 @@ class Graph(object):
           arcColor = 'Firebrick1'
         if arc.type == 'bi-directional':
           arrowtype = 'arrowtail = onormal, dir = both'
-        dotfile.write('{} -> {} [label = "{}", {}, color = {}];\n'.format(arc.source, arc.sink, arc.name, arrowtype, arcColor))
+        dotfile.write('{} -> {} [label = "{}", {}, color = {}];\n' \
+        .format(arc.source, arc.sink, arc.name, arrowtype, arcColor))
       # FINISH FILE
       dotfile.write('}')
 
   def produceDot(self):
     os.system('dot -Tpdf {} > {}'.format(self.dotfile, self.pdffile))
-
-  def injectSpecies(self, reservoir, species):
-    """
-    Inject a species in a reservoir
-
-    Args:
-      reservoir: The reservoir where the injection takes place
-      species: List of species which is injected in this reservoir
-
-    This is  used to inject species in the graph.  The injection can only occur
-    in an reservoir.  This function  does only inject the species.  It does not
-    propagate at this location. That is carried out in other functions.
-    """
-    pass
-
-
-  def propagateToken(self):
-    """
-    This
-    """
-    pass
-
-  # def makeTokenSet(self):
-  #   """
-  #   Loop through  all the nodes and arc and find the tokens.  Preparing for the
-  #   index sets.
-  #   """
-  #   self.tokenset = set()
-  #   for node in nodes:
-  #     self.tokenset |= {node.type['token']}
-
-  # def getTokenSet(self):
-  #   """Retrieve the available token set"""
-  #   try:
-  #     return self.tokenset
-  #   except Exception as e:
-  #     print(e.args[0])
-  #     print('Token set does not exist, returning empty set')
-  #     return set()
 
 
   def makeIndex(self):
@@ -164,41 +131,41 @@ class Graph(object):
     determined by the already generated graph.
     """
     # Node references
-    self.nmap = []
-    self.nmapNode = []
-    self.nmass = []
-    self.nmassNode = []
+    nmap = []
+    nmapNode = []
+    nmass = []
+    nmassNode = []
 
     # Arc references
-    self.amap = []
-    self.amapArc = []
-    self.amass = []
-    self.amassArc = []
+    amap = []
+    amapArc = []
+    amass = []
+    amassArc = []
 
     # n
     for i, (label, node) in enumerate(self.nodes.items()):
-      self.nmap.append(i)
-      self.nmapNode.append(node)          # This is a strict copy of self.nodes
+      nmap.append(i)
+      nmapNode.append(node)          # This is a strict copy of Node.___refs___
       print(node.tokens)
       if 'mass' in node.tokens:
-        self.nmass.append(i)
-        self.nmassNode.append(node)
+        nmass.append(i)
+        nmassNode.append(node)
 
     for i, (label, arc) in enumerate(self.arcs.items()):
-      self.amap.append(i)
-      self.amapArc.append(arc)             # This is a strict copy of self.arcs
+      amap.append(i)
+      amapArc.append(arc)
       if 'mass' == arc.token:
-        self.amass.append(i)
-        self.amassArc.append(arc)
+        amass.append(i)
+        amassArc.append(arc)
       # if
     # Prepare the set sizes
-    A.makeMapping(self.amap)
-    A.makeBlocking([1] * np.size(self.amap))
-    N.makeMapping(self.nmap)
-    N.makeBlocking([1] * np.size(self.nmap))
+    A.makeMapping(amap)
+    A.makeBlocking([1] * np.size(amap))
+    N.makeMapping(nmap)
+    N.makeBlocking([1] * np.size(nmap))
 
     F  = self.makeMatrix(self.nodes, self.arcs)
-    Fm = self.makeMatrix(self.nmassNode, self.amassArc)
+    Fm = self.makeMatrix(nmassNode, amassArc)
     # self.N = IndexSet('N',nmap,)
     print(F)
     print(Fm)
@@ -266,7 +233,7 @@ class IndexSet(object):
     generated  from  the configuration  file representing  the ontology  of the
     model.
     """
-    print(indexSet)
+    # print(indexSet)
     self.___refs___.append(self)                  # Making a list of references
     self.name = indexSet['aliases'][0][1]   # Used in this programming language
     self.aliases = indexSet['aliases']                            # All aliases
@@ -342,11 +309,6 @@ class Node(Graph):
   def makeJson(self):
     return json.dumps(self.__dict__)
 
-  def addMechanism(self, mechanism):
-    self.mechanisms = list(set(self.mechanisms).union(set([mechanism])))
-
-  def addToken(self, tokens):
-    self.tokens = list(set(self.tokens).union(set(tokens)))
 
 class Arc(Graph):
   """
@@ -366,32 +328,39 @@ class Arc(Graph):
     self.__dict__.update(**dict)
 
 
-    # print(self.__dict__)
-
-  def addMechanismToNodes(self, mechanism):
-    """Prepare subsets to head and tail nodes"""
-    self.head.addMechanism(mechanism)
-    self.tail.addMechanism(mechanism)
-
-  def addTokenToNodes(self):
-    """Prepare subsets to head and tail nodes"""
-    self.head.addToken(self.tokens)
-    self.tail.addToken(self.tokens)
-
   def keys(self):
     self.__dict__.keys()
 
   def makeJsonObj(self):
     return json.dumps(self.__dict__)
 
-class Composite(Graph):
-  """The initiation of the """
-  def __init__(self, arg):
-    super(Composite, self).__init__()
-    self.arg = arg
+class Species(Graph):
+  """
+  This class contain information about species in the graph
+  """
+  ___refs___ = []
+  def __init__(self):
+    self.___refs___.append(self)
+
+
+class Conversion(Graph):
+  """
+  This class contain information about token conversion in the graph
+  """
+  ___refs___ = []
+  def __init__(self):
+    self.___refs___.append(self)
+
+###############################################################################
+#                                 TESTING                                     #
+###############################################################################
 
 
 if __name__ == '__main__':
+  # Common.indices.makeIndexFile()
+  indices = Common.indices.getIndexes()
+  exec(open('Common/indexSets.py').read())
+  print(A.aliases)
   g = Graph('TESTGRAPH')
   g.makeNodes()
   g.makeArcs()
