@@ -277,7 +277,7 @@
       "type": "dynamic_0D",
       "class": "node_simple",
       "tokens": {
-        "mass": [],
+        "mass": ["A"],
         "energy": []
       },
       "name": "jacket"

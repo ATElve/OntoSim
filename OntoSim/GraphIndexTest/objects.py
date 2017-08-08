@@ -84,20 +84,16 @@ class Graph(object):
     Loop  trough  ALL  the typed  tokens  and then  load in  the instances  and
     possible conversions.
     """
-    self.species = {}
-    # print(self.typedTokens['species']['instances'])
+    self.species = {}  # Species
     for species in self.typedTokens['species']['instances']:
       self.species[species] = Species(species)
 
     self.speciesConversion = {}
     for conversion in self.typedTokens['species']['conversions']:
-      print(conversion)
-      label = '{} -> {}'.format(', '.join(conversion['reactants']), *conversion['products'])
-      # label = '{} -> {}'.format([', '.join[i for i in conversion]))
-      print(label)
-    # for label,species in self.typedTokens['species'].items():
-      # print(label)
-      # self.species[label] = Species(label,species)                # Label and dict
+      label = '{} -> {}'.format(', '.join(conversion['reactants']),\
+                                ', '.join(conversion['products']))
+      self.speciesConversion[label] = Conversion(label, conversion)
+
 
 
 
@@ -170,28 +166,45 @@ class Graph(object):
     nmapNode = []
     nmass = []
     nmassNode = []
-
+    nspecies = []
+    nspeciesNode = []
+    nenergy = []
+    nenergyNode = []
     # Arc references
     amap = []
     amapArc = []
     amass = []
     amassArc = []
-
-    # n
+    aenergy = []
+    aenergyArc = []
+    aspecies = []
+    aspeciesArc = []
+    # node stuff
     for i, (label, node) in enumerate(self.nodes.items()):
       nmap.append(i)
       nmapNode.append(node)          # This is a strict copy of Node.___refs___
-      print(node.tokens)
       if 'mass' in node.tokens:
         nmass.append(i)
         nmassNode.append(node)
+        print(node.tokens)
+        nspecies.append(len(node.tokens['mass']))
+      if 'energy' in node.tokens:
+        nenergy.append(i)
+        nenergyNode.append(node)
+    print(nspecies)
 
+    # arc stuff
     for i, (label, arc) in enumerate(self.arcs.items()):
+      print(arc.__dict__)
       amap.append(i)
       amapArc.append(arc)
       if 'mass' == arc.token:
         amass.append(i)
         amassArc.append(arc)
+        # aspecies.append(len(arc.typed_tokens))
+      elif arc.token == 'energy':
+        aenergy.append(i)
+        aenergyArc.append(arc)
       # if
     # Prepare the set sizes
     A.makeMapping(amap)
@@ -199,7 +212,7 @@ class Graph(object):
     N.makeMapping(nmap)
     N.makeBlocking([1] * np.size(nmap))
 
-    F  = self.makeMatrix(self.nodes, self.arcs)
+    F  = self.makeMatrix(nmapNode, amapArc)
     Fm = self.makeMatrix(nmassNode, amassArc)
     # self.N = IndexSet('N',nmap,)
     print(F)
@@ -229,10 +242,11 @@ class Graph(object):
     """
     mat = np.zeros((np.size(nodelist),np.size(arclist)))
     for i,node in enumerate(nodelist):                          # For every row
+      # print()zx
       for j,arc in enumerate(arclist):                 # For column in that row
-        if arc.tail == node:                     # Check if tail is current row
+        if str(arc.source) == node.label:        # Check if tail is current row
           mat[i,j] = -1
-        elif arc.head == node:                   # Check if head is current row
+        elif str(arc.sink) == node.label:        # Check if head is current row
           mat[i,j] = 1
     return mat                        # Return the value of the produced matrix
 
@@ -358,9 +372,12 @@ class Arc(Graph):
       label: The name of the arc used in the program
       dict:  Dictionary containing all the defined properties.
     """
+    # super(Arc, self).__init__('TMP')
     self.___refs___.append(self)
     self.label = label
     self.__dict__.update(**dict)
+
+    # self.source = self.nodes[str(self.source)]
 
 
   def keys(self):
@@ -384,10 +401,11 @@ class Conversion(Graph):
   This class contain information about token conversion in the graph
   """
   ___refs___ = []
-  def __init__(self, reactants, products):
+  def __init__(self, label, dict):
     self.___refs___.append(self)
-    self.reactants = reactants
-    self.products = products
+    self.label = label
+    self.__dict__.update(**dict)
+
 
 
 ###############################################################################
@@ -402,6 +420,8 @@ if __name__ == '__main__':
   g = Graph('TESTGRAPH')
   g.makeNodes()
   g.makeArcs()
-  # g.makeIndex()
+  g.makeIndex()
   g.makeDot()
   g.produceDot()
+  print(g.species)
+  print(g.speciesConversion)

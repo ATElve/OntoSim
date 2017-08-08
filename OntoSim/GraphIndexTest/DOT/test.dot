@@ -1,21 +1,21 @@
 ###############################################################################
 #	 Purpose: Dot graph for equation tree                                       #
 #	 Author:  Arne Tobias Elve                                                  #
-#	 When:    2017-08-07 17:42:05                                               #
+#	 When:    2017-08-08 17:09:01                                               #
 #	 Why:     Output to dot language                                            #
 ###############################################################################
 digraph G {
-6 [style = filled, label = "liq ph" fillcolor = Tomato];
-8 [style = filled, label = "jacket" fillcolor = Tomato];
-9 [style = filled, label = "hot" fillcolor = Gold1];
-1 [style = filled, label = "room" fillcolor = Gold1];
-7 [style = filled, label = "cold" fillcolor = Gold1];
-4 [style = filled, label = "gas  ph" fillcolor = Tomato];
 5 [style = filled, label = "wall" fillcolor = Snow4];
-4 -> 5 [label = "5 | 6", arrowhead = normal, color = Black];
-4 -> 1 [label = "5 | 7", arrowhead = normal, color = Black];
-8 -> 7 [label = "3 | 2", arrowtail = onormal, dir = both, color = Black];
-9 -> 8 [label = "1 | 3", arrowhead = normal, color = Black];
-8 -> 6 [label = "3 | 4", arrowhead = normal, color = Firebrick1];
+6 [style = filled, label = "liq ph" fillcolor = Tomato];
+4 [style = filled, label = "gas  ph" fillcolor = Tomato];
+7 [style = filled, label = "cold" fillcolor = Gold1];
+9 [style = filled, label = "hot" fillcolor = Gold1];
+8 [style = filled, label = "jacket" fillcolor = Tomato];
+1 [style = filled, label = "room" fillcolor = Gold1];
 6 -> 5 [label = "4 | 6", arrowhead = normal, color = Black];
+8 -> 7 [label = "3 | 2", arrowtail = onormal, dir = both, color = Black];
+8 -> 6 [label = "3 | 4", arrowhead = normal, color = Firebrick1];
+4 -> 1 [label = "5 | 7", arrowhead = normal, color = Black];
+9 -> 8 [label = "1 | 3", arrowhead = normal, color = Black];
+4 -> 5 [label = "5 | 6", arrowhead = normal, color = Black];
 }
